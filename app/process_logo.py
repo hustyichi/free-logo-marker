@@ -4,14 +4,13 @@ from PIL import Image, ImageOps
 from rembg import remove
 from pathlib import Path
 
-def process_logo(input_path: str, output_dir: str, name: str = "logo"):
+def process_logo(input_path: str, output_dir: str):
     """
     Removes background, crops to content, adds padding, and saves as PNG and ICO.
 
     Args:
         input_path: Path to the input image.
-        output_dir: Directory to save processed images.
-        name: Base name for the output files.
+        output_dir: Directory to save processed images (output files will be logo.png and favicon.ico).
 
     Returns:
         Tuple containing paths to the generated PNG and ICO files.
@@ -67,12 +66,12 @@ def process_logo(input_path: str, output_dir: str, name: str = "logo"):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    png_path = output_dir / f"{name}.png"
+    png_path = output_dir / "logo.png"
     new_img.save(png_path, format="PNG")
     print(f"Saved PNG: {png_path}")
 
     # 7. Save ICO
-    ico_path = output_dir / f"{name}_favicon.ico"
+    ico_path = output_dir / "favicon.ico"
     # Sizes: 16, 32, 48, 64
     # ICO format supports multiple sizes in one file
     try:

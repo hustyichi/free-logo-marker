@@ -18,7 +18,7 @@ def main():
 
     parser.add_argument("--prompt", type=str, help="Text prompt for generation")
     parser.add_argument("--input", type=str, help="Input file path for processing")
-    parser.add_argument("--name", type=str, default="logo", help="Base name for output files")
+    parser.add_argument("--name", type=str, default="default", help="Output directory name under output/")
 
     args = parser.parse_args()
 
@@ -31,7 +31,7 @@ def main():
 
     # Paths
     assets_dir = Path("assets")
-    output_dir = Path("output")
+    output_dir = Path("output") / args.name
 
     # Create directories if they don't exist
     assets_dir.mkdir(parents=True, exist_ok=True)
@@ -66,8 +66,7 @@ def main():
         try:
             process_logo(
                 input_path=str(raw_image_path),
-                output_dir=str(output_dir),
-                name=args.name
+                output_dir=str(output_dir)
             )
         except Exception as e:
             print(f"Processing failed: {e}")

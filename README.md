@@ -60,8 +60,8 @@ python main.py --all --prompt "minimalist clock icon, tech startup vibe, blue an
 ```
 
 输出:
-- `output/mylogo.png` - 512x512 透明背景 Logo
-- `output/mylogo_favicon.ico` - 多分辨率 favicon (16x16, 32x32, 48x48, 64x64)
+- `output/mylogo/logo.png` - 512x512 透明背景 Logo
+- `output/mylogo/favicon.ico` - 多分辨率 favicon (16x16, 32x32, 48x48, 64x64)
 
 #### 2. 纯生图模式 (`--generate`)
 
@@ -83,8 +83,8 @@ python main.py --process --input assets/logo_v1_raw.png --name final_logo
 ```
 
 输出:
-- `output/final_logo.png`
-- `output/final_logo_favicon.ico`
+- `output/final_logo/logo.png`
+- `output/final_logo/favicon.ico`
 
 ### 命令行参数
 
@@ -95,7 +95,7 @@ python main.py --process --input assets/logo_v1_raw.png --name final_logo
 | `--all` | 是 (三选一) | 生成并处理 |
 | `--prompt` | 生成模式必需 | 文本提示词 |
 | `--input` | 处理模式必需 | 输入图片路径 |
-| `--name` | 否 | 输出文件名 (默认: logo) |
+| `--name` | 否 | 输出目录名 (默认: default) |
 
 ## 目录结构
 
