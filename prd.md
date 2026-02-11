@@ -1,5 +1,5 @@
 
-# 产品需求与实现方案：AutoLogo CLI
+# 产品需求与实现方案： free logo marker
 
 **版本：** V1.0 (Local-First Edition)
 **定位：** 专为独立开发者设计的、解耦的本地 Logo 自动化生成与处理命令行工具。
@@ -63,22 +63,21 @@ free-logo-marker/
 **场景 1：为新项目一键生成完整资产**
 
 ```bash
-python logo_pipeline.py --all --prompt "minimalist clock icon, tech startup vibe, blue and white colors" --name "26shots"
+python logo_pipeline.py --all --prompt "minimalist clock icon, tech startup vibe, blue and white colors"
 
 ```
 
-*预期结果*：在 `output/` 目录下瞬间得到 `26shots.png` 和 `26shots_favicon.ico`，可直接拖入前端工程。
+*预期结果*：在 `output/` 目录下瞬间得到 `logo.png` 和 `favicon.ico`，可直接拖入前端工程。
 
 **场景 2：先生成几张看看效果（不处理）**
 
 ```bash
-python logo_pipeline.py --generate --prompt "abstract geometric letter M, corporate style" --input "assets/test_m.jpg"
-
+python logo_pipeline.py --generate --prompt "abstract geometric letter M, corporate style"
 ```
 
 **场景 3：处理一张在 Photoshop 里精修过的原图**
 
 ```bash
-python logo_pipeline.py --process --input "assets/test_m_retouched.jpg" --name "final_m"
+python logo_pipeline.py --process --input "assets/logo.png"
 
 ```
