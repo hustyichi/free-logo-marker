@@ -18,7 +18,7 @@
 
 ```bash
 # 克隆项目
-git clone <repository-url>
+git clone git@github.com:hustyichi/free-logo-marker.git
 cd free-logo-marker
 
 # 安装依赖 (推荐使用 uv)
