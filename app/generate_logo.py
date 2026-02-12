@@ -9,7 +9,7 @@ from pathlib import Path
 def generate_logo(
     prompt: str,
     output_path: str,
-    model: str = "gemini-3-pro-image",
+    model: str = None,
     api_base: str = None,
     api_key: str = None,
 ) -> str:
@@ -19,7 +19,7 @@ def generate_logo(
     Args:
         prompt: The description of the logo to generate.
         output_path: The file path where the generated image should be saved.
-        model: The model name to use (default: gemini-3-pro-image).
+        model: The model name to use (optional, defaults to env var or gemini-3-pro-image).
         api_base: The base URL for the API (optional, defaults to env var or local).
         api_key: The API key (optional, defaults to env var or 'not-needed').
 
@@ -29,6 +29,7 @@ def generate_logo(
     # Configuration
     base_url = api_base or os.getenv("GEN_API_BASE_URL", "http://127.0.0.1:8045/v1")
     key = api_key or os.getenv("GEN_API_KEY", "not-needed")
+    model_name = model or os.getenv("GEN_MODEL_NAME", "gemini-3-pro-image")
 
     client = OpenAI(base_url=base_url, api_key=key)
 
@@ -40,12 +41,12 @@ def generate_logo(
     )
 
     print(f"Generating logo with prompt: {prompt[:50]}...")
-    print(f"Using model: {model} at {base_url}")
+    print(f"Using model: {model_name} at {base_url}")
 
     try:
         # Call the API
         response = client.chat.completions.create(
-            model=model,
+            model=model_name,
             extra_body={"size": "1024x1024"},  # As per PRD 3.4
             messages=[{"role": "user", "content": full_prompt}],
         )
