@@ -4,7 +4,9 @@
 
 ## 功能特性
 
-- **AI 图像生成**: 通过 OpenAI 兼容 API 根据文本提示生成 Logo 图片
+- **AI 图像生成**: 支持两种生成模式：
+  - **基础模式**: 直接通过 Prompt 生成
+  - **产品模式**: 输入产品名称和描述，自动构建专业 Prompt 生成
 - **本地去背景**: 使用 `rembg` (U-Net 模型) 在本地离线去除背景，无需 API 费用
 - **自动裁剪**: 智能检测内容边界并紧凑裁剪
 - **标准输出**: 生成 512x512 透明 PNG 和多分辨率 ICO favicon
@@ -65,11 +67,20 @@ python main.py --all --prompt "minimalist clock icon, tech startup vibe, blue an
 
 #### 2. 纯生图模式 (`--generate`)
 
+**基础 Prompt 模式**：
 仅生成原始图片，适合批量生成后人工筛选:
 
 ```bash
 python main.py --generate --prompt "abstract geometric letter M, corporate style" --name logo_v1
 ```
+
+**产品智能模式**：
+输入产品信息，自动生成高质量 Prompt：
+
+```bash
+python main.py --generate --product-name "Nexus" --product-desc "AI-powered calendar app" --style "Modern, minimalist, purple gradient"
+```
+*(输出文件名将自动设置为 `nexus`，也可通过 `--name` 指定)*
 
 输出:
 - `assets/logo_v1_raw.png` - AI 生成的原始图片
@@ -93,9 +104,12 @@ python main.py --process --input assets/logo_v1_raw.png --name final_logo
 | `--generate` | 是 (三选一) | 仅生成图片 |
 | `--process` | 是 (三选一) | 仅处理图片 |
 | `--all` | 是 (三选一) | 生成并处理 |
-| `--prompt` | 生成模式必需 | 文本提示词 |
+| `--prompt` | 基础模式必需 | 文本提示词 |
+| `--product-name` | 否 | 产品名称 (启用产品模式) |
+| `--product-desc` | 产品模式必需 | 产品描述 |
+| `--style` | 否 | 视觉风格 (仅产品模式) |
 | `--input` | 处理模式必需 | 输入图片路径 |
-| `--name` | 否 | 输出目录名 (默认: default) |
+| `--name` | 否 | 输出目录名 (默认: default 或产品名) |
 
 ## 目录结构
 
