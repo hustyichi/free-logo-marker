@@ -3,6 +3,7 @@ import io
 from PIL import Image, ImageOps
 from rembg import remove
 from pathlib import Path
+from loguru import logger
 
 def process_logo(input_path: str, output_dir: str):
     """
@@ -19,18 +20,18 @@ def process_logo(input_path: str, output_dir: str):
     if not input_path.exists():
         raise FileNotFoundError(f"Input file not found: {input_path}")
 
-    print(f"Processing {input_path}...")
+    logger.info(f"Processing {input_path}...")
 
     # 1. Read Image
     with open(input_path, 'rb') as i:
         input_data = i.read()
 
     # 2. Remove Background (rembg)
-    print("Removing background (this may download models on first run)...")
+    logger.info("Removing background (this may download models on first run)...")
     try:
         subject_data = remove(input_data)
     except Exception as e:
-        print(f"Error removing background: {e}")
+        logger.error(f"Error removing background: {e}")
         raise
 
     # 3. Post-process with PIL
@@ -41,9 +42,9 @@ def process_logo(input_path: str, output_dir: str):
     bbox = img.getbbox()
     if bbox:
         img = img.crop(bbox)
-        print(f"Cropped to bounding box: {bbox}")
+        logger.debug(f"Cropped to bounding box: {bbox}")
     else:
-        print("Warning: No content found in image (all transparent?)")
+        logger.warning("Warning: No content found in image (all transparent?)")
 
     # 5. Resize to 512x512 with safe area
     final_size = (512, 512)
@@ -68,7 +69,7 @@ def process_logo(input_path: str, output_dir: str):
 
     png_path = output_dir / "logo.png"
     new_img.save(png_path, format="PNG")
-    print(f"Saved PNG: {png_path}")
+    logger.success(f"Saved PNG: {png_path}")
 
     # 7. Save ICO
     ico_path = output_dir / "favicon.ico"
@@ -76,9 +77,9 @@ def process_logo(input_path: str, output_dir: str):
     # ICO format supports multiple sizes in one file
     try:
         new_img.save(ico_path, format="ICO", sizes=[(16,16), (32,32), (48,48), (64,64)])
-        print(f"Saved ICO: {ico_path}")
+        logger.success(f"Saved ICO: {ico_path}")
     except Exception as e:
-        print(f"Error saving ICO: {e}")
+        logger.warning(f"Error saving ICO: {e}")
         # Non-critical, but good to report
 
     return png_path, ico_path

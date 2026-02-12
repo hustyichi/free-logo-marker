@@ -3,6 +3,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from pathlib import Path
+from loguru import logger
 from app.generate_logo import generate_logo
 from app.process_logo import process_logo
 
@@ -44,14 +45,14 @@ def main():
         raw_filename = f"{args.name}_raw.png"
         raw_image_path = assets_dir / raw_filename
 
-        print(f"Mode: GENERATE. Prompt: '{args.prompt}'")
+        logger.info(f"Mode: GENERATE. Prompt: '{args.prompt}'")
         try:
             generate_logo(
                 prompt=args.prompt,
                 output_path=str(raw_image_path)
             )
         except Exception as e:
-            print(f"Generation failed: {e}")
+            logger.error(f"Generation failed: {e}")
             sys.exit(1)
 
     if args.process:
@@ -59,20 +60,20 @@ def main():
 
     if args.process or args.all:
         if not raw_image_path:
-             print("Error: No input image path defined.")
+             logger.error("Error: No input image path defined.")
              sys.exit(1)
 
-        print(f"Mode: PROCESS. Input: {raw_image_path}")
+        logger.info(f"Mode: PROCESS. Input: {raw_image_path}")
         try:
             process_logo(
                 input_path=str(raw_image_path),
                 output_dir=str(output_dir)
             )
         except Exception as e:
-            print(f"Processing failed: {e}")
+            logger.error(f"Processing failed: {e}")
             sys.exit(1)
 
-    print("Done.")
+    logger.success("Done.")
 
 if __name__ == "__main__":
     main()
