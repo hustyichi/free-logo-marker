@@ -7,7 +7,7 @@ from pathlib import Path
 from loguru import logger
 
 
-def generate_logo(
+def _call_image_api(
     prompt: str,
     output_path: str,
     model: str = None,
@@ -15,17 +15,7 @@ def generate_logo(
     api_key: str = None,
 ) -> str:
     """
-    Generates an image from a prompt using OpenAI-compatible API and saves it.
-
-    Args:
-        prompt: The description of the logo to generate.
-        output_path: The file path where the generated image should be saved.
-        model: The model name to use (optional, defaults to env var or gemini-3-pro-image).
-        api_base: The base URL for the API (optional, defaults to env var or local).
-        api_key: The API key (optional, defaults to env var or 'not-needed').
-
-    Returns:
-        The path to the saved image file.
+    Internal function to handle OpenAI-compatible API interaction, response parsing, and image saving.
     """
     # Configuration
     base_url = api_base or os.getenv("GEN_API_BASE_URL", "http://127.0.0.1:8045/v1")
@@ -33,13 +23,6 @@ def generate_logo(
     model_name = model or os.getenv("GEN_MODEL_NAME", "gemini-3-pro-image")
 
     client = OpenAI(base_url=base_url, api_key=key)
-
-    # Enforce flat, vector style in prompt as per PRD
-    full_prompt = (
-        f"{prompt}. "
-        "Style requirements: Flat 2D vector logo, minimalist, solid white background, "
-        "no shadows, high contrast, centered subject."
-    )
 
     logger.info(f"Generating logo with prompt: {prompt[:50]}...")
     logger.info(f"Using model: {model_name} at {base_url}")
@@ -49,7 +32,7 @@ def generate_logo(
         response = client.chat.completions.create(
             model=model_name,
             extra_body={"size": "1024x1024"},  # As per PRD 3.4
-            messages=[{"role": "user", "content": full_prompt}],
+            messages=[{"role": "user", "content": prompt}],
         )
 
         # Depending on the backend, the content might be a URL or b64json
@@ -131,3 +114,48 @@ def generate_logo(
     except Exception as e:
         logger.error(f"Error generating logo: {e}")
         raise
+
+
+def generate_raw_image(
+    prompt: str,
+    output_path: str,
+    model: str = None,
+    api_base: str = None,
+    api_key: str = None,
+) -> str:
+    """
+    Generates an image from a raw prompt, with minimal technical appending.
+    """
+    # Append minimal technical keywords to ensure basic quality/format
+    full_prompt = (
+        f"{prompt}. "
+        "Requirements: High quality, solid background for easy extraction."
+    )
+    return _call_image_api(full_prompt, output_path, model, api_base, api_key)
+
+
+def generate_product_logo(
+    product_name: str,
+    product_desc: str,
+    output_path: str,
+    style: str = None,
+    model: str = None,
+    api_base: str = None,
+    api_key: str = None,
+) -> str:
+    """
+    Generates a logo based on structured product inputs.
+    """
+    if not style:
+        style = "Modern, minimalist, tech-forward, clean lines, vector art"
+
+    # Construct high-quality prompt
+    full_prompt = (
+        f"Logo design for a product named \"{product_name}\". "
+        f"Product description: {product_desc}. "
+        f"Visual style: {style}. "
+        "Requirements: Vector graphics, professional logo design, minimalist, "
+        "solid white background for easy extraction, centered, high contrast."
+    )
+
+    return _call_image_api(full_prompt, output_path, model, api_base, api_key)
