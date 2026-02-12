@@ -5,7 +5,14 @@ import requests
 from openai import OpenAI
 from pathlib import Path
 
-def generate_logo(prompt: str, output_path: str, model: str = "gemini-3-pro-image", api_base: str = None, api_key: str = None) -> str:
+
+def generate_logo(
+    prompt: str,
+    output_path: str,
+    model: str = "gemini-3-pro-image",
+    api_base: str = None,
+    api_key: str = None,
+) -> str:
     """
     Generates an image from a prompt using OpenAI-compatible API and saves it.
 
@@ -23,10 +30,7 @@ def generate_logo(prompt: str, output_path: str, model: str = "gemini-3-pro-imag
     base_url = api_base or os.getenv("GEN_API_BASE_URL", "http://127.0.0.1:8045/v1")
     key = api_key or os.getenv("GEN_API_KEY", "not-needed")
 
-    client = OpenAI(
-        base_url=base_url,
-        api_key=key
-    )
+    client = OpenAI(base_url=base_url, api_key=key)
 
     # Enforce flat, vector style in prompt as per PRD
     full_prompt = (
@@ -42,8 +46,8 @@ def generate_logo(prompt: str, output_path: str, model: str = "gemini-3-pro-imag
         # Call the API
         response = client.chat.completions.create(
             model=model,
-            extra_body={"size": "1024x1024"}, # As per PRD 3.4
-            messages=[{"role": "user", "content": full_prompt}]
+            extra_body={"size": "1024x1024"},  # As per PRD 3.4
+            messages=[{"role": "user", "content": full_prompt}],
         )
 
         # Depending on the backend, the content might be a URL or b64json
@@ -51,14 +55,16 @@ def generate_logo(prompt: str, output_path: str, model: str = "gemini-3-pro-imag
 
         # Debug print to help diagnose issues if they persist
         if not content:
-            print(f"Debug: Content is empty. Full response: {response.model_dump_json()}")
+            print(
+                f"Debug: Content is empty. Full response: {response.model_dump_json()}"
+            )
         else:
             print(f"Debug: Response content preview: {content[:100]}...")
 
         image_url = None
 
         # Strategy 1: Look for Markdown image syntax ![alt](url)
-        markdown_match = re.search(r'!\[.*?\]\((.*?)\)', content)
+        markdown_match = re.search(r"!\[.*?\]\((.*?)\)", content)
         if markdown_match:
             image_url = markdown_match.group(1)
             print("Extracted URL/URI from markdown pattern.")
@@ -75,7 +81,9 @@ def generate_logo(prompt: str, output_path: str, model: str = "gemini-3-pro-imag
         # Strategy 3: Look for Data URI pattern
         if not image_url:
             # Matches data:image/...;base64, followed by base64 chars
-            data_uri_match = re.search(r'(data:image/[a-zA-Z]+;base64,[a-zA-Z0-9+/=]+)', content)
+            data_uri_match = re.search(
+                r"(data:image/[a-zA-Z]+;base64,[a-zA-Z0-9+/=]+)", content
+            )
             if data_uri_match:
                 image_url = data_uri_match.group(1)
                 print("Extracted Data URI from text.")
@@ -88,9 +96,11 @@ def generate_logo(prompt: str, output_path: str, model: str = "gemini-3-pro-imag
                 print("Using full content as URL/Data URI.")
 
         if not image_url:
-             # Dump more context for debugging
-             print(f"Debug: Failed to parse. Full content length: {len(content)}")
-             raise ValueError(f"Could not parse image URL from response. Content preview: {content[:200]}...")
+            # Dump more context for debugging
+            print(f"Debug: Failed to parse. Full content length: {len(content)}")
+            raise ValueError(
+                f"Could not parse image URL from response. Content preview: {content[:200]}..."
+            )
 
         # Download/Decode the image data
         if image_url.startswith("data:"):
@@ -110,7 +120,7 @@ def generate_logo(prompt: str, output_path: str, model: str = "gemini-3-pro-imag
         # Ensure directory exists
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_path, 'wb') as f:
+        with open(output_path, "wb") as f:
             f.write(img_data)
 
         print(f"Image saved to {output_path}")
